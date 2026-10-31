@@ -32,40 +32,31 @@ jobs:
       - name: Convert logo to Android icons
         run: python scripts/generate_icons.py
 
-      - name: Setup Gradle Wrapper (auto-download jar if missing)
+      - name: Setup Gradle Wrapper
         run: |
           mkdir -p gradle/wrapper
-          if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
-            echo "Downloading gradle-wrapper.jar..."
-            curl -sL -o gradle/wrapper/gradle-wrapper.jar \
-              https://github.com/gradle/gradle/raw/v8.2.0/gradle/wrapper/gradle-wrapper.jar
-          fi
-          if [ ! -f gradlew ]; then
-            echo "Creating gradlew..."
-            cat > gradlew << 'EOF'
+
+          # Download wrapper jar
+          curl -sL -o gradle/wrapper/gradle-wrapper.jar \
+            https://raw.githubusercontent.com/gradle/gradle/v8.2.0/gradle/wrapper/gradle-wrapper.jar
+
+          # Create clean gradlew
+          cat > gradlew << 'EOF'
           #!/bin/sh
-          APP_HOME=\( ( cd " \){0%/*}" && pwd -P ) || exit
-          APP_BASE_NAME=${0##*/}
-          DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
-          if [ -n "$JAVA_HOME" ] ; then
-              JAVACMD="$JAVA_HOME/bin/java"
+          APP_HOME=\( (cd " \)(dirname "$0")" && pwd)
+          CLASSPATH="$APP_HOME/gradle/wrapper/gradle-wrapper.jar"
+          if [ -n "$JAVA_HOME" ]; then
+            JAVACMD="$JAVA_HOME/bin/java"
           else
-              JAVACMD="java"
+            JAVACMD="java"
           fi
-          CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
-          exec "$JAVACMD" $DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS \
-            -Dorg.gradle.appname=$APP_BASE_NAME \
-            -classpath "$CLASSPATH" \
-            org.gradle.wrapper.GradleWrapperMain "$@"
+          exec "$JAVACMD" -Xmx64m -Xms64m -classpath "\( CLASSPATH" org.gradle.wrapper.GradleWrapperMain " \)@"
           EOF
-          fi
+
           chmod +x gradlew
 
-      - name: Create gradle-wrapper.properties if missing
-        run: |
-          mkdir -p gradle/wrapper
-          if [ ! -f gradle/wrapper/gradle-wrapper.properties ]; then
-            cat > gradle/wrapper/gradle-wrapper.properties << 'EOF'
+          # Create properties
+          cat > gradle/wrapper/gradle-wrapper.properties << 'EOF'
           distributionBase=GRADLE_USER_HOME
           distributionPath=wrapper/dists
           distributionUrl=https\://services.gradle.org/distributions/gradle-8.2-bin.zip
@@ -74,7 +65,6 @@ jobs:
           zipStoreBase=GRADLE_USER_HOME
           zipStorePath=wrapper/dists
           EOF
-          fi
 
       - name: Build Release APK
         run: ./gradlew assembleRelease --stacktrace
