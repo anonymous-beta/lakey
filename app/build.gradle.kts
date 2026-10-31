@@ -53,7 +53,6 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("com.google.accompanist:accompanist-permissions:0.34.0")
-    implementation("org.bouncycastle:bcprov-jdk15on:1.70")
     implementation("com.tom-roush:pdfbox-android:2.0.27.0")
     implementation(project(":payload"))
 }
