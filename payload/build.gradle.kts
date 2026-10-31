@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         minSdk = 26
-        targetSdk = 34
+        // targetSdk removed (no longer needed for library)
     }
 
     compileOptions {
@@ -24,5 +24,4 @@ android {
 dependencies {
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("org.bouncycastle:bcprov-jdk15on:1.70")
 }
