@@ -1,0 +1,4 @@
+-keep class com.anonymousbeta.lakey.** { *; }
+-keep class com.anonymousbeta.payload.** { *; }
+-dontwarn org.bouncycastle.**
+-dontwarn com.tom_roush.**
