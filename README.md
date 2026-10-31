@@ -1,0 +1,2 @@
+# lakey
+A simple keylogger
